@@ -1,13 +1,24 @@
-package ch.zli.kilometerkoenig.model;
+package ch.zli.kilometerkoenig.domain.dao.entity;
+
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.time.Instant;
 
+@Entity(tableName = "Measurement")
 public class Measurement {
 
+    @PrimaryKey
     private Long id;
+    @ColumnInfo(name = "startTime")
     private Instant startTime;
+    @ColumnInfo(name = "id")
     private Instant endTime;
+    @ColumnInfo(name = "steps")
     private int steps;
+
+    @ColumnInfo(name = "lvlPoints")
     private int lvlPoints;
 
     public Measurement(Long id, Instant startTime, Instant endTime, int steps, int lvlPoints) {
