@@ -1,4 +1,4 @@
-package ch.zli.kilometerkoenig;
+package ch.zli.kilometerkoenig.activity;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import ch.zli.kilometerkoenig.R;
 
 public class MainActivity extends AppCompatActivity {
 
