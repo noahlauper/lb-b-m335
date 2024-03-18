@@ -27,7 +27,6 @@ import androidx.core.view.WindowInsetsCompat;
 import android.Manifest;
 
 import java.time.Instant;
-import java.util.List;
 
 import ch.zli.kilometerkoenig.R;
 import ch.zli.kilometerkoenig.domain.AppDatabase;
@@ -43,7 +42,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     private Sensor sensor;
 
     private TextView count;
-    private int counter;
+    private int steps;
 
     private Instant startTime;
 
@@ -61,6 +60,15 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACTIVITY_RECOGNITION},
+                    REQUEST_CODE_ACTIVITY_RECOGNITION);
+            initializeSensor();
+        } else {
+            initializeSensor();
+        }
         startTime = Instant.now();
         setView();
         stopMeasurementButton.setOnClickListener(view -> {
@@ -75,7 +83,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         endTime = Instant.now();
         AsyncTask.execute(() -> {
             Measurement measurement = new Measurement();
-            measurement.setSteps(counter);
+            measurement.setSteps(steps);
             measurement.setStartTime(startTime.toString());
             measurement.setEndTime(endTime.toString());
             AppDatabase.getInstance(this).measurementDao().insertAll(measurement);
@@ -96,7 +104,10 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+            steps = (int) sensorEvent.values[0];
+            count.setText(String.valueOf(steps));
+        }
     }
 
     @Override
