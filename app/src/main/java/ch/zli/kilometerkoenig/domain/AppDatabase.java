@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import ch.zli.kilometerkoenig.domain.dao.MeasurementDao;
 import ch.zli.kilometerkoenig.domain.entity.*;
 
-@Database(entities = {ch.zli.kilometerkoenig.domain.dao.entity.Measurement.class}, version = 1)
+@Database(entities = {Measurement.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String  DATABASE_NAME = "measurements";
 
