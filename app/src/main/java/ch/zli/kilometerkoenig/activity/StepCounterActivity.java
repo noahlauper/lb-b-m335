@@ -8,6 +8,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
@@ -25,7 +26,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import android.Manifest;
 
+import java.time.Instant;
+import java.util.List;
+
 import ch.zli.kilometerkoenig.R;
+import ch.zli.kilometerkoenig.domain.AppDatabase;
+import ch.zli.kilometerkoenig.domain.entity.Measurement;
 
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -37,6 +43,11 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     private Sensor sensor;
 
     private TextView count;
+    private int counter;
+
+    private Instant startTime;
+
+    private Instant endTime;
 
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -50,12 +61,24 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        startTime = Instant.now();
         setView();
-        initializeSensor();
-
         stopMeasurementButton.setOnClickListener(view -> {
+            saveMeasurement();
             Intent mainActivityIntend = new Intent(this, MainActivity.class);
             startActivity(mainActivityIntend);
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void saveMeasurement() {
+        endTime = Instant.now();
+        AsyncTask.execute(() -> {
+            Measurement measurement = new Measurement();
+            measurement.setSteps(counter);
+            measurement.setStartTime(startTime.toString());
+            measurement.setEndTime(endTime.toString());
+            AppDatabase.getInstance(this).measurementDao().insertAll(measurement);
         });
     }
 
@@ -73,6 +96,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
+
     }
 
     @Override

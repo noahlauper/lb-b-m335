@@ -1,6 +1,7 @@
 package ch.zli.kilometerkoenig.activity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -10,7 +11,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.List;
+
 import ch.zli.kilometerkoenig.R;
+import ch.zli.kilometerkoenig.domain.AppDatabase;
+import ch.zli.kilometerkoenig.domain.entity.Measurement;
 
 public class MainActivity extends AppCompatActivity {
 
