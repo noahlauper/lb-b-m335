@@ -1,6 +1,10 @@
 package ch.zli.kilometerkoenig.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -14,7 +18,10 @@ import ch.zli.kilometerkoenig.R;
 
 public class StepCounterActivity extends AppCompatActivity {
 
-    Button stopMeasurementButton;
+    private final static int SAMPLING_RATE = 100000;
+
+    private SensorManager sensorManager;
+    private Sensor sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +34,21 @@ public class StepCounterActivity extends AppCompatActivity {
             return insets;
         });
 
-        stopMeasurementButton = findViewById(R.id.stopMeasurement);
+        Button stopMeasurementButton = findViewById(R.id.stopMeasurement);
 
         stopMeasurementButton.setOnClickListener(view -> {
             Intent mainActivityIntend = new Intent(this, MainActivity.class);
             startActivity(mainActivityIntend);
         });
+
+        initializeSensor();
+
+    }
+
+
+    private void initializeSensor() {
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        sensorManager.registerListener((SensorEventListener) this, sensor, SAMPLING_RATE);
     }
 }
