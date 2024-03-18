@@ -1,6 +1,8 @@
 package ch.zli.kilometerkoenig.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import ch.zli.kilometerkoenig.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    Button startMeasurementButton;
 
 
     @Override
@@ -23,6 +26,14 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+
+        startMeasurementButton = findViewById(R.id.startMeasurement);
+
+        startMeasurementButton.setOnClickListener(view -> {
+            Intent stepCounterIntent = new Intent(this, StepCounterActivity.class);
+            startActivity(stepCounterIntent);
         });
     }
 }
