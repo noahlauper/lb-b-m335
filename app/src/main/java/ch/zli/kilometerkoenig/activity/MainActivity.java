@@ -1,16 +1,26 @@
 package ch.zli.kilometerkoenig.activity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import ch.zli.kilometerkoenig.R;
@@ -21,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     Button startMeasurementButton;
 
+
+    List<Measurement> allMeasurements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,5 +52,25 @@ public class MainActivity extends AppCompatActivity {
             Intent stepCounterIntent = new Intent(this, StepCounterActivity.class);
             startActivity(stepCounterIntent);
         });
+        getMeasurements();
     }
+
+
+
+
+
+    public void getMeasurements() {
+        Runnable myRunnable = () ->
+        {
+            try {
+                allMeasurements = AppDatabase.getInstance(this).measurementDao().getAll();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        };
+        Thread thread = new Thread(myRunnable);
+        thread.start();
+
+    }
+
 }
