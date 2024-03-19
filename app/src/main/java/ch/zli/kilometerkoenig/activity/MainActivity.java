@@ -14,17 +14,9 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import ch.zli.kilometerkoenig.R;
@@ -67,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setLvl() {
-        for (Measurement measurement: allMeasurements) {
+        for (Measurement measurement : allMeasurements) {
             lvl += measurement.getLvlPoints();
         }
         lvlText.setText("lvl: " + lvl);
@@ -114,9 +106,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String formatTime(long milliseconds) {
-        long seconds = (milliseconds / 1000) % 60;
-        long minutes = (milliseconds / (1000 * 60)) % 60;
-        return String.format("%02d:%02d", minutes, seconds);
+        int totalSeconds = (int) (milliseconds / 1000);
+        int hours = totalSeconds / 3600;
+        int minutes = (totalSeconds % 3600) / 60;
+        int seconds = totalSeconds % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
 
