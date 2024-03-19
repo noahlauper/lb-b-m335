@@ -56,7 +56,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void displayMeasurements() {
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.measurementLayout);
+        System.out.println(allMeasurements);
+        for (Measurement measurement : allMeasurements) {
+            final LinearLayout container = new LinearLayout(MainActivity.this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            container.setLayoutParams(params);
+            container.setBackgroundColor(Color.parseColor("#FF00FF"));
+            final TextView lvl = new TextView(MainActivity.this);
+            lvl.setText(measurement.getLvlPoints() + " lvl                     ");
+            lvl.setTextColor(Color.WHITE);
+            container.addView(lvl);
 
+            final TextView steps = new TextView(MainActivity.this);
+            steps.setText(measurement.getSteps() + " Schritte");
+            steps.setTextColor(Color.WHITE);
+            container.addView(steps);
+
+            linearLayout.addView(container);
+        }
+
+    }
 
 
     public void getMeasurements() {
@@ -64,13 +85,13 @@ public class MainActivity extends AppCompatActivity {
         {
             try {
                 allMeasurements = AppDatabase.getInstance(this).measurementDao().getAll();
+                displayMeasurements();
             } catch (Exception e) {
                 System.out.println(e);
             }
         };
         Thread thread = new Thread(myRunnable);
         thread.start();
-
     }
 
 }
