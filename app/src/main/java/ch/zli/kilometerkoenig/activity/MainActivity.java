@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -82,27 +83,34 @@ public class MainActivity extends AppCompatActivity {
         System.out.println(allMeasurements);
         for (Measurement measurement : allMeasurements) {
             LinearLayout container = new LinearLayout(MainActivity.this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            container.setLayoutParams(params);
+            LinearLayout.LayoutParams containerParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            container.setLayoutParams(containerParams);
             container.setBackgroundColor(Color.parseColor("#FF00FF"));
             final TextView lvl = new TextView(MainActivity.this);
-            lvl.setText(measurement.getLvlPoints() + " lvl                     ");
+            lvl.setText(measurement.getLvlPoints() + " lvl     ");
             lvl.setTextColor(Color.WHITE);
+            lvl.setTextSize(22);
             container.addView(lvl);
 
             final TextView steps = new TextView(MainActivity.this);
-            steps.setText(measurement.getSteps() + " Schritte");
+            steps.setText(measurement.getSteps() + " Schritte      ");
             steps.setTextColor(Color.WHITE);
             container.addView(steps);
+            steps.setTextSize(22);
+
 
             long elapsedTime = Long.parseLong(measurement.getEndTime()) - Long.parseLong(measurement.getStartTime());
             String formattedTime = formatTime(elapsedTime);
 
 
-
+            final TextView time = new TextView(MainActivity.this);
+            time.setText(formattedTime);
+            time.setGravity(Gravity.CENTER);
+            time.setTextColor(Color.WHITE);
+            time.setTextSize(22);
+            container.addView(time);
             linearLayout.addView(container);
         }
-
     }
 
     private String formatTime(long milliseconds) {
