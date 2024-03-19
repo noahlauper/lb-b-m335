@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.measurementLayout);
         System.out.println(allMeasurements);
         for (Measurement measurement : allMeasurements) {
-            final LinearLayout container = new LinearLayout(MainActivity.this);
+            LinearLayout container = new LinearLayout(MainActivity.this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             container.setLayoutParams(params);
             container.setBackgroundColor(Color.parseColor("#FF00FF"));
@@ -94,9 +95,20 @@ public class MainActivity extends AppCompatActivity {
             steps.setTextColor(Color.WHITE);
             container.addView(steps);
 
+            long elapsedTime = Long.parseLong(measurement.getEndTime()) - Long.parseLong(measurement.getStartTime());
+            String formattedTime = formatTime(elapsedTime);
+
+
+
             linearLayout.addView(container);
         }
 
+    }
+
+    private String formatTime(long milliseconds) {
+        long seconds = (milliseconds / 1000) % 60;
+        long minutes = (milliseconds / (1000 * 60)) % 60;
+        return String.format("%02d:%02d", minutes, seconds);
     }
 
 
