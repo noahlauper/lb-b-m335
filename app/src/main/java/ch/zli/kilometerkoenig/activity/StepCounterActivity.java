@@ -112,6 +112,9 @@ public class StepCounterActivity extends AppCompatActivity {
             stepService = binder.getService();
             isStepServiceBound = true;
             stepService.initializeSensor();
+            stepService.getStepCountLiveData().observe(StepCounterActivity.this, steps -> {
+                count.setText(String.valueOf(steps));
+            });
         }
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
