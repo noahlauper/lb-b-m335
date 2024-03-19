@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     Button startMeasurementButton;
 
+    TextView lvlText;
 
+    int lvl;
     List<Measurement> allMeasurements;
 
     @Override
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-
+        lvlText = findViewById(R.id.lvl);
         startMeasurementButton = findViewById(R.id.startMeasurement);
 
         startMeasurementButton.setOnClickListener(view -> {
@@ -53,6 +57,18 @@ public class MainActivity extends AppCompatActivity {
             startActivity(stepCounterIntent);
         });
         getMeasurements();
+    }
+
+
+    private void setLvl() {
+        for (Measurement measurement: allMeasurements) {
+            lvl += measurement.getLvlPoints();
+        }
+        lvlText.setText("lvl: " + lvl);
+        if (lvl >= 1000) {
+            ImageView trophyImage = findViewById(R.id.trophyImage);
+            trophyImage.setVisibility(View.VISIBLE);
+        }
     }
 
 
@@ -86,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 allMeasurements = AppDatabase.getInstance(this).measurementDao().getAll();
                 displayMeasurements();
+                setLvl();
             } catch (Exception e) {
                 System.out.println(e);
             }
