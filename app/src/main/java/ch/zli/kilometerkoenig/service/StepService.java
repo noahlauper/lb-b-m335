@@ -17,7 +17,9 @@ public class StepService extends Service implements SensorEventListener {
 
     private final static int SAMPLING_RATE = 100;
 
-    private MutableLiveData<Integer> stepCountLiveData = new MutableLiveData<>();
+    private MutableLiveData<Integer> stepCountLiveData = new MutableLiveData<>(0); // Initialize with 0
+
+    boolean isRunningInBackground = false;
 
     private SensorManager sensorManager;
 
@@ -37,14 +39,24 @@ public class StepService extends Service implements SensorEventListener {
         sensorManager.registerListener((SensorEventListener) this, sensor, SAMPLING_RATE);
     }
 
+    public void startBackgroundCounting() {
+        isRunningInBackground = true;
+        initializeSensor();
+    }
+
+    public void stopBackgroundCounting() {
+        isRunningInBackground = false;
+    }
+
     public MutableLiveData<Integer> getStepCountLiveData() {
         return stepCountLiveData;
     }
 
+
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            steps = (int) sensorEvent.values[0];
+            stepCountLiveData.postValue((int) sensorEvent.values[0]);
         }
     }
 
