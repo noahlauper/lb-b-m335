@@ -11,9 +11,13 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.TextView;
 
+import androidx.lifecycle.MutableLiveData;
+
 public class StepService extends Service implements SensorEventListener {
 
     private final static int SAMPLING_RATE = 100;
+
+    private MutableLiveData<Integer> stepCountLiveData = new MutableLiveData<>();
 
     private SensorManager sensorManager;
 
@@ -31,6 +35,10 @@ public class StepService extends Service implements SensorEventListener {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         sensorManager.registerListener((SensorEventListener) this, sensor, SAMPLING_RATE);
+    }
+
+    public MutableLiveData<Integer> getStepCountLiveData() {
+        return stepCountLiveData;
     }
 
     @Override
