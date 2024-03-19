@@ -6,10 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,9 +39,9 @@ public class StepCounterActivity extends AppCompatActivity {
     private Button stopMeasurementButton;
 
     private TextView count;
-    private int steps;
-
     private StepService stepService;
+
+    int stepsCount;
 
     private boolean isStepServiceBound = false;
 
@@ -88,7 +84,7 @@ public class StepCounterActivity extends AppCompatActivity {
     private void saveMeasurement(String startTime, String endTime) {
         AsyncTask.execute(() -> {
             Measurement measurement = new Measurement();
-            measurement.setSteps(stepService.steps);
+            measurement.setSteps(stepsCount);
             measurement.setStartTime(startTime);
             measurement.setEndTime(endTime);
             measurement.setLvlPoints(stepService.steps);
@@ -101,6 +97,22 @@ public class StepCounterActivity extends AppCompatActivity {
         count = findViewById(R.id.stepCount);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isStepServiceBound) {
+            stepService.startBackgroundCounting();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isStepServiceBound) {
+            stepService.stopBackgroundCounting();
+        }
+    }
+
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -110,7 +122,8 @@ public class StepCounterActivity extends AppCompatActivity {
             isStepServiceBound = true;
             stepService.initializeSensor();
             stepService.getStepCountLiveData().observe(StepCounterActivity.this, steps -> {
-                count.setText(String.valueOf(steps));
+                stepsCount += steps;
+                count.setText(String.valueOf(stepsCount));
             });
         }
         @Override
