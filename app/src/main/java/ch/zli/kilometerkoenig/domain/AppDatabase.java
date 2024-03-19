@@ -13,7 +13,7 @@ import ch.zli.kilometerkoenig.domain.entity.*;
 public abstract class AppDatabase extends RoomDatabase {
     private static final String  DATABASE_NAME = "measurements";
 
-    private static AppDatabase instance;
+    private static volatile AppDatabase instance;
 
     public abstract MeasurementDao measurementDao();
 
