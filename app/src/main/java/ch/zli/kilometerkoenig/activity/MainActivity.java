@@ -25,14 +25,14 @@ import ch.zli.kilometerkoenig.domain.entity.Measurement;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button startMeasurementButton;
+    private Button startMeasurementButton;
 
-    TextView lvlText;
+    private TextView lvlText;
 
     private long startTime;
 
-    int lvl;
-    List<Measurement> allMeasurements;
+    private int lvl;
+    private List<Measurement> allMeasurements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,26 +83,30 @@ public class MainActivity extends AppCompatActivity {
             lvl.setTextColor(Color.WHITE);
             lvl.setTextSize(22);
             container.addView(lvl);
-
-            final TextView steps = new TextView(MainActivity.this);
-            steps.setText(measurement.getSteps() + " Schritte      ");
-            steps.setTextColor(Color.WHITE);
-            container.addView(steps);
-            steps.setTextSize(22);
-
-
-            long elapsedTime = Long.parseLong(measurement.getEndTime()) - Long.parseLong(measurement.getStartTime());
-            String formattedTime = formatTime(elapsedTime);
-
-
-            final TextView time = new TextView(MainActivity.this);
-            time.setText(formattedTime);
-            time.setGravity(Gravity.CENTER);
-            time.setTextColor(Color.WHITE);
-            time.setTextSize(22);
-            container.addView(time);
+            container.addView(initializeSteps(measurement));
+            container.addView(initializeTimeView(measurement));
             linearLayout.addView(container);
         }
+    }
+
+    private TextView initializeSteps(Measurement measurement) {
+        final TextView steps = new TextView(MainActivity.this);
+        steps.setText(measurement.getSteps() + " Schritte      ");
+        steps.setTextColor(Color.WHITE);
+        steps.setTextSize(22);
+
+        return steps;
+    }
+
+    private TextView initializeTimeView(Measurement measurement) {
+        long elapsedTime = Long.parseLong(measurement.getEndTime()) - Long.parseLong(measurement.getStartTime());
+        String formattedTime = formatTime(elapsedTime);
+        final TextView time = new TextView(MainActivity.this);
+        time.setText(formattedTime);
+        time.setGravity(Gravity.CENTER);
+        time.setTextColor(Color.WHITE);
+        time.setTextSize(22);
+        return time;
     }
 
     private String formatTime(long milliseconds) {

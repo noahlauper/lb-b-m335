@@ -41,7 +41,7 @@ public class StepCounterActivity extends AppCompatActivity {
     private TextView count;
     private StepService stepService;
 
-    int stepsCount;
+    private int stepsCount;
 
     private boolean isStepServiceBound = false;
 
@@ -57,6 +57,19 @@ public class StepCounterActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        askForSensorPermission();
+        setView();
+        stopMeasurementButton.setOnClickListener(view -> {
+            Intent intent = getIntent();
+            long startTime = intent.getLongExtra("startTime", 0);
+            long endTime = System.currentTimeMillis();
+            saveMeasurement(String.valueOf(startTime),String.valueOf(endTime));
+            Intent mainActivityIntend = new Intent(this, MainActivity.class);
+            startActivity(mainActivityIntend);
+        });
+    }
+
+    private void askForSensorPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -70,15 +83,6 @@ public class StepCounterActivity extends AppCompatActivity {
             bindService(bindStepServiceIntent, connection, Context.BIND_AUTO_CREATE);
 
         }
-        setView();
-        stopMeasurementButton.setOnClickListener(view -> {
-            Intent intent = getIntent();
-            long startTime = intent.getLongExtra("startTime", 0);
-            long endTime = System.currentTimeMillis();
-            saveMeasurement(String.valueOf(startTime),String.valueOf(endTime));
-            Intent mainActivityIntend = new Intent(this, MainActivity.class);
-            startActivity(mainActivityIntend);
-        });
     }
 
     private void saveMeasurement(String startTime, String endTime) {
