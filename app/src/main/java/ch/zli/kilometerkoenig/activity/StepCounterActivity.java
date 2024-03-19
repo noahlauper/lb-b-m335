@@ -45,10 +45,6 @@ public class StepCounterActivity extends AppCompatActivity {
     private TextView count;
     private int steps;
 
-    private Instant startTime;
-
-    private Instant endTime;
-
     private StepService stepService;
 
     private boolean isStepServiceBound = false;
@@ -78,22 +74,23 @@ public class StepCounterActivity extends AppCompatActivity {
             bindService(bindStepServiceIntent, connection, Context.BIND_AUTO_CREATE);
 
         }
-        startTime = Instant.now();
         setView();
         stopMeasurementButton.setOnClickListener(view -> {
-            saveMeasurement();
+            Intent intent = getIntent();
+            long startTime = intent.getLongExtra("startTime", 0);
+            long endTime = System.currentTimeMillis();
+            saveMeasurement(String.valueOf(startTime),String.valueOf(endTime));
             Intent mainActivityIntend = new Intent(this, MainActivity.class);
             startActivity(mainActivityIntend);
         });
     }
 
-    private void saveMeasurement() {
-        endTime = Instant.now();
+    private void saveMeasurement(String startTime, String endTime) {
         AsyncTask.execute(() -> {
             Measurement measurement = new Measurement();
             measurement.setSteps(stepService.steps);
-            measurement.setStartTime(startTime.toString());
-            measurement.setEndTime(endTime.toString());
+            measurement.setStartTime(startTime);
+            measurement.setEndTime(endTime);
             measurement.setLvlPoints(stepService.steps);
             AppDatabase.getInstance(this).measurementDao().insertAll(measurement);
         });

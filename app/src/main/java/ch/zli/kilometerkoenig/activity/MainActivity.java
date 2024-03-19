@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     TextView lvlText;
 
+    private long startTime;
+
     int lvl;
     List<Measurement> allMeasurements;
 
@@ -53,7 +55,9 @@ public class MainActivity extends AppCompatActivity {
         startMeasurementButton = findViewById(R.id.startMeasurement);
 
         startMeasurementButton.setOnClickListener(view -> {
+            startTime = System.currentTimeMillis();
             Intent stepCounterIntent = new Intent(this, StepCounterActivity.class);
+            stepCounterIntent.putExtra("startTime", startTime);
             startActivity(stepCounterIntent);
         });
         getMeasurements();
