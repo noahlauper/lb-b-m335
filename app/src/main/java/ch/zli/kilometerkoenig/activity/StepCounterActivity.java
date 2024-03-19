@@ -1,8 +1,10 @@
 package ch.zli.kilometerkoenig.activity;
 
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -11,6 +13,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -31,15 +34,13 @@ import java.time.Instant;
 import ch.zli.kilometerkoenig.R;
 import ch.zli.kilometerkoenig.domain.AppDatabase;
 import ch.zli.kilometerkoenig.domain.entity.Measurement;
+import ch.zli.kilometerkoenig.service.StepService;
 
-public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
+public class StepCounterActivity extends AppCompatActivity {
 
-    private final static int SAMPLING_RATE = 100;
     private static final int REQUEST_CODE_ACTIVITY_RECOGNITION = 101;
 
     private Button stopMeasurementButton;
-    private SensorManager sensorManager;
-    private Sensor sensor;
 
     private TextView count;
     private int steps;
@@ -47,6 +48,10 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     private Instant startTime;
 
     private Instant endTime;
+
+    private StepService stepService;
+
+    private boolean isStepServiceBound = false;
 
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -65,9 +70,13 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACTIVITY_RECOGNITION},
                     REQUEST_CODE_ACTIVITY_RECOGNITION);
-            initializeSensor();
+
+            Intent bindStepServiceIntent = new Intent(this, StepService.class);
+            bindService(bindStepServiceIntent, connection, Context.BIND_AUTO_CREATE);
         } else {
-            initializeSensor();
+            Intent bindStepServiceIntent = new Intent(this, StepService.class);
+            bindService(bindStepServiceIntent, connection, Context.BIND_AUTO_CREATE);
+
         }
         startTime = Instant.now();
         setView();
@@ -82,10 +91,10 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         endTime = Instant.now();
         AsyncTask.execute(() -> {
             Measurement measurement = new Measurement();
-            measurement.setSteps(steps);
+            measurement.setSteps(stepService.steps);
             measurement.setStartTime(startTime.toString());
             measurement.setEndTime(endTime.toString());
-            measurement.setLvlPoints(steps);
+            measurement.setLvlPoints(stepService.steps);
             AppDatabase.getInstance(this).measurementDao().insertAll(measurement);
         });
     }
@@ -93,25 +102,20 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     private void setView() {
         stopMeasurementButton = findViewById(R.id.stopMeasurement);
         count = findViewById(R.id.stepCount);
-
     }
 
-    private void initializeSensor() {
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        sensorManager.registerListener((SensorEventListener) this, sensor, SAMPLING_RATE);
-    }
 
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            steps = (int) sensorEvent.values[0];
-            count.setText(String.valueOf(steps));
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            StepService.StepBinder binder = (StepService.StepBinder) iBinder;
+            stepService = binder.getService();
+            isStepServiceBound = true;
+            stepService.initializeSensor();
         }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
-    }
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            isStepServiceBound = false;
+        }
+    };
 }
