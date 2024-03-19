@@ -78,7 +78,6 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void saveMeasurement() {
         endTime = Instant.now();
         AsyncTask.execute(() -> {
@@ -86,6 +85,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             measurement.setSteps(steps);
             measurement.setStartTime(startTime.toString());
             measurement.setEndTime(endTime.toString());
+            measurement.setLvlPoints(steps);
             AppDatabase.getInstance(this).measurementDao().insertAll(measurement);
         });
     }
